@@ -1,0 +1,20 @@
+﻿@model List<(string Title, string Controller)>
+
+@{
+    ViewData["Title"] = "Довідники";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_DirectorySidebar" model="Model" />
+        </div>
+        <div class="col-md-9">
+            <h1>Довідники</h1>
+            <p>У цьому розділі зібрані всі довідники, які використовуються в системі.</p>
+            <p>Оберіть довідник ліворуч, щоб перейти до його перегляду або редагування.</p>
+        </div>
+    </div>
+</div>
+

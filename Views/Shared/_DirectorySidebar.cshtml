@@ -1,0 +1,13 @@
+﻿@model List<(string Title, string Controller)>
+
+<ul class="list-group">
+    @foreach (var item in Model)
+    {
+        var isActive = ViewContext.RouteData.Values["controller"]?.ToString() == item.Controller;
+        <li class="list-group-item @(isActive ? "active fw-bold" : "")">
+            <a asp-controller="@item.Controller" asp-action="Index" class="nav-link text-dark">
+                @item.Title
+            </a>
+        </li>
+    }
+</ul>

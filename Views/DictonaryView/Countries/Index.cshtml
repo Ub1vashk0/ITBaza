@@ -1,0 +1,50 @@
+﻿@model IEnumerable<ITBaza.Models.Country>
+@{
+    ViewData["Title"] = "Країни";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_DirectorySidebar" model="Model" />
+        </div>
+        <div class="col-md-9">
+            <form asp-action="Index" method="get" class="mb-3 d-flex justify-content-between">
+                <div class="form-group mb-0 me-2">
+                    <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Пошук країни..." />
+                </div>
+                <button type="submit" class="btn btn-primary">Пошук</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Очистити</a>
+                <a asp-action="Create" class="btn btn-success ms-auto">+ Створити</a>
+            </form>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Назва
+                        </th>
+                        <th>
+                            Дії
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </<div>
+    </div>
+</div>
