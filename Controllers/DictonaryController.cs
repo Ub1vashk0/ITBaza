@@ -6,20 +6,21 @@ public class DictonaryController : Controller
 {
     public IActionResult Index()
     {
-        // Тут можна оновити список, або зробити автоматичне сканування
-        var directoryItems = new List<(string Title, string Controller)>
+        return View(GetDictionaryMenu());
+    }
+    public static List<(string Title, string Controller)> GetDictionaryMenu()
+    {
+        return new List<(string, string)>
         {
             ("Країни", "Countries"),
             ("Розміщення", "Placements"),
             ("Департаменти", "Departments"),
             ("Відділи", "Divisions"),
             ("Вакансії", "Vacations"),
-            ("Оператори мобільного", "MobileOperators"),
+            ("Оператори", "MobileOperators"),
             ("Типи ресурсів", "ResourceTypes"),
             ("Ролі ресурсів", "ResourceRoles"),
-            ("Ресурси", "Resources")
+            ("Ресурси", "Resources"),
         };
-
-        return View(directoryItems);
     }
 }
