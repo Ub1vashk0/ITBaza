@@ -1,0 +1,50 @@
+﻿@model ITBaza.Models.ResourceRole
+
+@{
+    ViewData["Title"] = "Редагування ролі ресурсу";
+    var menu = ViewBag.SidebarMenu as List<ITBaza.Models.DictionaryMenuItem>;
+    var resources = ViewBag.Resources as SelectList;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_DirectorySidebar" model="@menu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
+
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3 col-md-6">
+                    <label asp-for="ResourceId" class="form-label">Ресурс</label>
+                    <select asp-for="ResourceId" asp-items="resources" class="form-select select2">
+                        <option value="">Оберіть ресурс</option>
+                    </select>
+                    <span asp-validation-for="ResourceId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    <label asp-for="RoleName" class="form-label">Назва ролі</label>
+                    <input asp-for="RoleName" class="form-control" />
+                    <span asp-validation-for="RoleName" class="text-danger"></span>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Назад</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

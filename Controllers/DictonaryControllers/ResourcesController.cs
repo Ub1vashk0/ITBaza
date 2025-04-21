@@ -31,16 +31,10 @@ public class ResourcesController : DirectoryControllerBase<Resource, AppDbContex
     protected override void PrepSelectLists(object? entity = null)
     {
         ViewBag.ResourceTypes = new SelectList(_ctx.ResourceTypes, "Id", "Name");
-
-        ViewBag.ResponsiblePersons = new SelectList(
+        ViewBag.ResponsiblePeople = new SelectList(
             _ctx.People
                 .Where(p => p.IsActive)
-                .Select(p => new
-                {
-                    p.Id,
-                    FullName = p.LastName + " " + p.FirstName +
-                               (p.MiddleName != null ? " " + p.MiddleName : "")
-                }),
+                .Select(p => new { p.Id, FullName = p.LastName + " " + p.FirstName + " " + p.MiddleName }),
             "Id", "FullName");
     }
 

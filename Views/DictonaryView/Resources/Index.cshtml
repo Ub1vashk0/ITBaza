@@ -1,0 +1,64 @@
+﻿@model IEnumerable<ITBaza.Models.Resource>
+
+@{
+    ViewData["Title"] = "Ресурси";
+    var menu = ViewBag.SidebarMenu as List<ITBaza.Models.DictionaryMenuItem>;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_DirectorySidebar" model="@menu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            <form method="get" asp-action="Index" class="row mb-3 align-items-center">
+                <div class="col-md-9 d-flex gap-2">
+                    <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Пошук..." />
+                    <button class="btn btn-primary">Пошук</button>
+                    <a asp-action="Index" class="btn btn-secondary">Очистити</a>
+                </div>
+                <div class="col-md-3 text-end">
+                    <a asp-action="Create" class="btn btn-success">+ Створити</a>
+                </div>
+            </form>
+
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Назва</th>
+                        <th>Тип</th>
+                        <th>Опис</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.ResourceType?.Name</td>
+                            <td>@item.Description</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id" title="Редагувати" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info ms-2">Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (!Model.Any())
+            {
+                <p class="text-muted">Записів не знайдено.</p>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

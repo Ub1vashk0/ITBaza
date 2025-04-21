@@ -1,0 +1,45 @@
+﻿@model ITBaza.Models.Resource
+
+@{
+    ViewData["Title"] = "Деталі ресурсу";
+    var menu = ViewBag.SidebarMenu as List<ITBaza.Models.DictionaryMenuItem>;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_DirectorySidebar" model="@menu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            <dl class="row">
+                <dt class="col-sm-3">Назва</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3">Тип ресурсу</dt>
+                <dd class="col-sm-9">@Model.ResourceType?.Name</dd>
+
+                <dt class="col-sm-3">Основне розміщення</dt>
+                <dd class="col-sm-9">@Model.MainLocation</dd>
+
+                <dt class="col-sm-3">Альтернативне розміщення</dt>
+                <dd class="col-sm-9">@Model.AltLocation</dd>
+
+                <dt class="col-sm-3">Опис</dt>
+                <dd class="col-sm-9">@Model.Description</dd>
+
+                <dt class="col-sm-3">Відповідальний</dt>
+                <dd class="col-sm-9">@($"{Model.ResponsiblePerson?.LastName} {Model.ResponsiblePerson?.FirstName} {Model.ResponsiblePerson?.MiddleName}")</dd>
+
+                <dt class="col-sm-3">Коментар</dt>
+                <dd class="col-sm-9">@Model.Comment</dd>
+            </dl>
+
+            <div class="mt-4">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редагувати</a>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Назад</a>
+            </div>
+        </div>
+    </div>
+</div>
