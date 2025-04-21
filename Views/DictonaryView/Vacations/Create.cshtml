@@ -1,0 +1,67 @@
+﻿@model ITBaza.Models.Vacation
+
+@{
+    ViewData["Title"] = "Створення вакансії";
+    var menu = ViewBag.SidebarMenu as List<ITBaza.Models.DictionaryMenuItem>;
+    var departments = ViewBag.Departments as SelectList;
+    var divisions = ViewBag.Divisions as SelectList ?? new SelectList(Enumerable.Empty<SelectListItem>());
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_DirectorySidebar" model="@menu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
+
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            }
+
+            <form asp-action="Create" method="post" id="vacation-form">
+                <div class="mb-3 col-md-6">
+                    <label asp-for="DepartmentId" class="form-label">Департамент</label>
+                    <select asp-for="DepartmentId" asp-items="departments" class="form-select" id="department-select">
+                        <option value="">Оберіть департамент</option>
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    <label asp-for="DivisionId" class="form-label">Відділ</label>
+                    <select asp-for="DivisionId" asp-items="divisions" class="form-select select2" id="division-select" disabled>
+                        <option value="">Спершу оберіть департамент</option>
+                    </select>
+                    <span asp-validation-for="DivisionId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    <label asp-for="Name" class="form-label">Назва вакансії</label>
+                    <input asp-for="Name" class="form-control" id="name-input" disabled />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Назад</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

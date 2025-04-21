@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ITBaza.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ITBaza.Controllers;
 
@@ -6,21 +7,10 @@ public class DictonaryController : Controller
 {
     public IActionResult Index()
     {
-        return View(GetDictionaryMenu());
+        var menu = DictionaryMenuItem.GetDictionaryMenu();
+        return View(menu);
     }
-    public static List<(string Title, string Controller)> GetDictionaryMenu()
-    {
-        return new List<(string, string)>
-        {
-            ("Країни", "Countries"),
-            ("Розміщення", "Placements"),
-            ("Департаменти", "Departments"),
-            ("Відділи", "Divisions"),
-            ("Вакансії", "Vacations"),
-            ("Оператори", "MobileOperators"),
-            ("Типи ресурсів", "ResourceTypes"),
-            ("Ролі ресурсів", "ResourceRoles"),
-            ("Ресурси", "Resources"),
-        };
-    }
+    
+
 }
+

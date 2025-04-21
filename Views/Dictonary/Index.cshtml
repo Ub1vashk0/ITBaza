@@ -1,14 +1,13 @@
-﻿@model List<(string Title, string Controller)>
-
-@{
+﻿@{
     ViewData["Title"] = "Довідники";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var menu = ViewBag.SidebarMenu as List<ITBaza.Models.DictionaryMenuItem> ?? new();
 }
 
 <div class="container">
     <div class="row">
         <div class="col-md-3">
-            <partial name="_DirectorySidebar" model="Model" />
+            <partial name="_DirectorySidebar" model="Model"/>
         </div>
         <div class="col-md-9">
             <h1>Довідники</h1>

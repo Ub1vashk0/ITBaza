@@ -1,0 +1,37 @@
+﻿@model ITBaza.Models.Country
+
+@{
+    ViewData["Title"] = "Редагування країни";
+    var menu = ViewBag.SidebarMenu as List<ITBaza.Models.DictionaryMenuItem> ?? new();
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_DirectorySidebar" model="@menu" />
+        </div>
+
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
+
+            <form asp-action="Edit" method="post">
+                @* приховане поле для Id *@
+                <input type="hidden" asp-for="Id" />
+
+                <div class="col-md-4">
+                    <label asp-for="Name" class="form-label">Назва країни</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Зберегти</button>
+                <a asp-action="Index" class="btn btn-secondary mt-3 ms-2">Назад</a>
+            </form>
+        </div>
+    </div>
+</div>

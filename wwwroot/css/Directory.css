@@ -1,0 +1,28 @@
+﻿/* wwwroot/css/dictionary.css */
+.dictionary-layout body {
+    overflow: hidden;
+}
+
+.dictionary-layout .fixed-sidebar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    width: 250px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #ddd;
+}
+
+.dictionary-layout .main-content {
+    margin-left: 250px;
+    margin-top: 56px;
+    padding: 20px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+}
+
+.dictionary-layout .table-responsive {
+    max-height: 70vh;
+    overflow-y: auto;
+}

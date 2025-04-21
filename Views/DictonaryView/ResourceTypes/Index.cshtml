@@ -1,10 +1,8 @@
-﻿@model IEnumerable<ITBaza.Models.Country>
-
+﻿@model IEnumerable<ITBaza.Models.ResourceType>
 @{
-    ViewData["Title"] = "Країни";
+    ViewData["Title"] = "Типи ресурсів";
     var menu = ViewBag.SidebarMenu as List<ITBaza.Models.DictionaryMenuItem>;
 }
-
 <div class="container">
     <div class="row">
         <div class="col-md-3">
@@ -13,26 +11,29 @@
         <div class="col-md-9">
             <h2>@ViewData["Title"]</h2>
             <form method="get" asp-action="Index" class="row mb-3 align-items-center">
-                <div class="col-md-8 d-flex gap-2">
+                <div class="col-md-9 d-flex gap-2">
                     <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Пошук..." />
                     <button class="btn btn-primary">Пошук</button>
                     <a asp-action="Index" class="btn btn-secondary">Очистити</a>
                 </div>
-                <div class="col-md-4 text-end">
+                <div class="col-md-3 text-end">
                     <a asp-action="Create" class="btn btn-success">+ Створити</a>
                 </div>
             </form>
-            <table class="table">
-                <thead><tr><th>Назва</th><th></th></tr></thead>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr><th>Назва</th><th>Дії</th></tr>
+                </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
                             <td>@item.Name</td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id" title="Редагувати" class="btn btn-sm btn-outline-secondary">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
                                     <i class="bi bi-pencil"></i>
                                 </a>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info ms-2">Details</a>
                             </td>
                         </tr>
                     }
@@ -41,8 +42,3 @@
         </div>
     </div>
 </div>
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

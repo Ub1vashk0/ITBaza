@@ -1,4 +1,4 @@
-using ITBaza.Models;
+п»їusing ITBaza.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,15 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews()
     .AddRazorOptions(options =>
     {
-        // Пошук у кастомній папці
-        options.ViewLocationFormats.Add("/Views/DictonaryView/{1}/{0}.cshtml");
-
-        // Залишаємо стандартний Shared
-        options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
+        options.ViewLocationFormats.Clear(); // РџРѕС‡РёСЃС‚РёРјРѕ СЃС‚Р°РЅРґР°СЂС‚РЅС–
+        options.ViewLocationFormats.Add("/Views/{1}/{0}.cshtml");
+        options.ViewLocationFormats.Add("/Views/DictonaryView/{1}/{0}.cshtml"); // вњ… С†Рµ РґРѕРґР°С” С‚РІС–Р№ С€Р»СЏС…
+        options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml"); // Shared Р·Р°Р»РёС€Р°С”РјРѕ
     });
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+//builder.Services.AddControllersWithViews()
+    //.AddApplicationPart(typeof(DirectoryControllerBase<,>).Assembly);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -35,14 +33,11 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.MapControllers(); // РґР»СЏ Р°С‚СЂРёР±СѓС‚РёРІРЅРѕРіРѕ СЂРѕСѓС‚С–РЅРіСѓ
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.MapControllerRoute(
-    name: "dictonary",
-    pattern: "Dictonary/{controller=Countries}/{action=Index}/{id?}");
-
-
+    pattern: "{controller=Home}/{action=Index}/{id?}"); // fallback
 
 app.Run();
+

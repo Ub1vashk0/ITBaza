@@ -1,0 +1,56 @@
+﻿@model ITBaza.Models.Placement
+
+@{
+    ViewData["Title"] = "Редагування розміщення";
+    var menu = ViewBag.SidebarMenu as List<ITBaza.Models.DictionaryMenuItem>;
+    var countries = ViewBag.CountryId as SelectList;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_DirectorySidebar" model="@menu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
+
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3 col-md-6">
+                    <label asp-for="CountryId" class="form-label">Країна</label>
+                    <select asp-for="CountryId" asp-items="ViewBag.CountryId" class="form-select select2">
+                        <option value="">Оберіть країну</option>
+                    </select>
+                    <span asp-validation-for="CountryId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    <label asp-for="City" class="form-label">Місто</label>
+                    <input asp-for="City" class="form-control" />
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    <label asp-for="Office" class="form-label">Офіс</label>
+                    <input asp-for="Office" class="form-control" />
+                    <span asp-validation-for="Office" class="text-danger"></span>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Назад</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

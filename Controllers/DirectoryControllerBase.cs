@@ -1,33 +1,24 @@
-﻿// ---------------- «using»  ----------------------------------------------
-using Microsoft.AspNetCore.Mvc;          // дає базовий клас Controller
-using Microsoft.EntityFrameworkCore;     // IQueryable, Include, ToListAsync
+﻿using ITBaza.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ITBaza.Models;
+using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace ITBaza.Controllers;
-
-/// <summary>
-/// Базовий CRUD‑контролер для всіх довідників (Country, Placement …).
-/// TEntity — клас‑сутність із первинним ключем Id.
-/// TContext — ваш DbContext (AppDbContext).
-/// </summary>
+[Route("Dictonary/[controller]/{action=Index}")]
 public abstract class DirectoryControllerBase<TEntity, TContext> : Controller
     where TEntity : class
     where TContext : DbContext
 {
-    // ----------------------- DI‑контекст ---------------------------------
-    protected readonly TContext _ctx;                       // доступ до БД
-    protected DirectoryControllerBase(TContext ctx) => _ctx = ctx;
+    protected readonly TContext _ctx;
 
-    // ------------------ абстрактний «Конструктор LINQ» -------------------
-    /// <remarks>
-    /// Повертає IQueryable із потрібними Include / Where.
-    /// Реальна реалізація — у підкласі (CountriesController, …).
-    /// </remarks>
-    protected abstract IQueryable<TEntity> BuildQuery(string? search);
+    protected DirectoryControllerBase(TContext ctx)
+    {
+        _ctx = ctx;
+    }
 
-    // Назва папки представлень (наприклад, "DictonaryView/Countries")
-    protected virtual string ViewFolder => $"DictonaryView/{GetFolderName()}";
+    protected virtual string ViewFolder => $"Views/DictonaryView/{GetFolderName()}";
+    protected virtual Task<bool> ExistsAsync(TEntity entity) => Task.FromResult(false);
 
-    // Метод для підстановки назви папки (із винятками)
     private string GetFolderName()
     {
         string name = typeof(TEntity).Name;
@@ -35,60 +26,75 @@ public abstract class DirectoryControllerBase<TEntity, TContext> : Controller
         {
             "Country" => "Countries",
             "Person" => "People",
-            "Category" => "Categories",
             _ => name + "s"
         };
     }
 
-    private string ViewPath(string viewName) => $"/Views/{ViewFolder}/{viewName}.cshtml";
-
-    // ==========================   ACTION‑МЕТОДИ   ========================
-
-    // ---------- Index (список + пошук) -----------------------------------
-    public async Task<IActionResult> Index(string? search, int page = 1)
+    public override void OnActionExecuting(ActionExecutingContext context)
     {
-        var data = await BuildQuery(search)   // 1) формуємо запит
-                         .Take(500)           // 2) примітивний ліміт на 500
-                         .ToListAsync();      // 3) виконуємо SQL
-        ViewBag.Search = search;              // повертаємо введений текст
-        return View(ViewPath("Index"), data); // 4) повертаємо View
+        ViewBag.SidebarMenu = DictionaryMenuItem.GetDictionaryMenu();
+        base.OnActionExecuting(context);
     }
 
-    // ---------- Create (GET) --------------------------------------------
+    protected abstract IQueryable<TEntity> BuildQuery(string? search);
+
+    // ----- INDEX (GET) -----
+    [HttpGet]
+    [Route("")]
+    public async Task<IActionResult> Index(string? search)
+    {
+        var data = await BuildQuery(search).Take(500).ToListAsync();
+        ViewBag.Search = search;
+        return View("Index", data);
+    }
+
+    // ----- CREATE (GET) -----
+    [HttpGet]
     public virtual IActionResult Create()
     {
+        var entity = Activator.CreateInstance<TEntity>();
         PrepSelectLists();
-        return View(ViewPath("Create"), Activator.CreateInstance<TEntity>());
+        return View("Create", entity);
     }
 
-    // ---------- Create (POST) -------------------------------------------
-    [HttpPost, ValidateAntiForgeryToken]
+    // ----- CREATE (POST) -----
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public virtual async Task<IActionResult> Create(TEntity entity)
     {
         if (!ModelState.IsValid)
         {
             PrepSelectLists(entity);
-            return View(ViewPath("Create"), entity);
+            return View("Create", entity);
+        }
+
+        if (await ExistsAsync(entity))
+        {
+            ModelState.AddModelError(string.Empty, "Такий запис уже існує.");
+            PrepSelectLists(entity);
+            return View("Create", entity);
         }
 
         _ctx.Add(entity);
         await _ctx.SaveChangesAsync();
-        TempData["Success"] = "Запис створено";
-        return RedirectToAction(nameof(Index));
+        TempData["Success"] = "Створено успішно!";
+        return View("Create", entity);
     }
 
-    // ---------- Edit (GET) ----------------------------------------------
+    // ----- EDIT (GET) -----
+    [HttpGet]
     public virtual async Task<IActionResult> Edit(int id)
     {
         var entity = await _ctx.Set<TEntity>().FindAsync(id);
         if (entity == null) return NotFound();
 
         PrepSelectLists(entity);
-        return View(ViewPath("Edit"), entity);
+        return View("Edit", entity);
     }
 
-    // ---------- Edit (POST) ---------------------------------------------
-    [HttpPost, ValidateAntiForgeryToken]
+    // ----- EDIT (POST) -----
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public virtual async Task<IActionResult> Edit(int id, TEntity entity)
     {
         if (id != (int)typeof(TEntity).GetProperty("Id")!.GetValue(entity)!)
@@ -97,26 +103,29 @@ public abstract class DirectoryControllerBase<TEntity, TContext> : Controller
         if (!ModelState.IsValid)
         {
             PrepSelectLists(entity);
-            return View(ViewPath("Edit"), entity);
+            return View("Edit", entity);
         }
 
         _ctx.Update(entity);
         await _ctx.SaveChangesAsync();
         TempData["Success"] = "Зміни збережено";
-        return RedirectToAction(nameof(Index));
+        return View("Edit", entity);
     }
 
-    // ---------- Delete (GET) (підтвердження) -----------------------------
+    // ----- DELETE (GET) -----
+    [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
         var entity = await _ctx.Set<TEntity>().FindAsync(id);
         if (entity == null) return NotFound();
 
-        return View(ViewPath("Delete"), entity);
+        return View("Delete", entity);
     }
 
-    // ---------- Delete (POST) -------------------------------------------
-    [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+    // ----- DELETE (POST) -----
+    [HttpPost]
+    [ActionName("Delete")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var entity = await _ctx.Set<TEntity>().FindAsync(id);
@@ -124,9 +133,21 @@ public abstract class DirectoryControllerBase<TEntity, TContext> : Controller
 
         await _ctx.SaveChangesAsync();
         TempData["Success"] = "Запис вилучено";
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction("Index");
     }
 
-    // ---------- SelectList‑хелпер (перевизначається в підкласі) ----------
+    // ----- DETAILS (GET) -----
+    [HttpGet]
+    public virtual async Task<IActionResult> Details(int id)
+    {
+        var entity = await _ctx.Set<TEntity>().FindAsync(id);
+        if (entity == null)
+            return NotFound();
+
+        PrepSelectLists(entity);
+        return View("Details", entity);
+    }
+
+    // ----- Віртуальний метод для SelectList -----
     protected virtual void PrepSelectLists(object? entity = null) { }
 }
