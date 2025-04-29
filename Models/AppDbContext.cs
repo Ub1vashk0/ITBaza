@@ -145,7 +145,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.LastName).HasMaxLength(100);
             entity.Property(e => e.MiddleName).HasMaxLength(100);
             entity.Property(e => e.PersonalPhone).HasMaxLength(20);
-            entity.Property(e => e.WorkType).HasMaxLength(50);
+            entity.Property(e => e.WorkType).HasMaxLength(50).HasConversion<string>();
 
             entity.HasOne(d => d.Placement).WithMany(p => p.People)
                 .HasForeignKey(d => d.PlacementId)

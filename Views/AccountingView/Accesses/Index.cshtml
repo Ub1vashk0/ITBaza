@@ -1,0 +1,64 @@
+﻿@model IEnumerable<ITBaza.Models.Access>
+
+@{
+    ViewData["Title"] = "Облікові записи доступу";
+    var menu = ViewBag.AccountingMenu as List<ITBaza.Models.AccountingMenuItem>;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AccountingSidebar" model="@menu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            <form method="get" asp-action="Index" class="row mb-3 align-items-center">
+                <div class="col-md-9 d-flex gap-2">
+                    <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Пошук за логіном, ресурсом або роллю..." />
+                    <button class="btn btn-primary">Пошук</button>
+                    <a asp-action="Index" class="btn btn-secondary">Очистити</a>
+                </div>
+                <div class="col-md-3 text-end">
+                    <a asp-action="Create" class="btn btn-success">+ Додати</a>
+                </div>
+            </form>
+
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ресурс</th>
+                        <th>Логін</th>
+                        <th>Роль</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var access in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@access.Id" class="text-decoration-none">
+                                    @access.Id
+                                </a>
+                            </td>
+                            <td>@access.Resource?.Name</td>
+                            <td>@access.Login</td>
+                            <td>@access.ResourceRole?.RoleName</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@access.Id" class="btn btn-sm btn-outline-secondary">Редагувати</a>
+                                <a asp-action="Details" asp-route-id="@access.Id" class="btn btn-sm btn-outline-info ms-2">Деталі</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (!Model.Any())
+            {
+                <p class="text-muted">Записів не знайдено.</p>
+            }
+        </div>
+    </div>
+</div>

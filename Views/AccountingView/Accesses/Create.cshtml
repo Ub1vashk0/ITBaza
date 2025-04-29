@@ -1,0 +1,97 @@
+﻿@model ITBaza.Models.Access
+
+@{
+    ViewData["Title"] = "Створення доступу";
+    var menu = ViewBag.AccountingMenu as List<ITBaza.Models.AccountingMenuItem>;
+    var resources = ViewBag.Resources as SelectList;
+    var roles = ViewBag.Roles as SelectList;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AccountingSidebar" model="@menu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
+
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            }
+
+            <form asp-action="Create" method="post">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Login" class="form-label">Логін</label>
+                            <input asp-for="Login" class="form-control" />
+                            <span asp-validation-for="Login" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ResourceId" class="form-label">Ресурс</label>
+                    <select id="resource-select" asp-for="ResourceId" asp-items="resources" class="form-select select2">
+                                <option value="">Оберіть ресурс</option>
+                            </select>
+                            <span asp-validation-for="ResourceId" class="text-danger"></span>
+                            <div id="resource-info" class="alert alert-secondary small mt-2">
+                                <strong>Інформація про ресурс:</strong>
+                                <div id="resource-details"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ResourceRoleId" class="form-label">Роль</label>
+                            <select asp-for="ResourceRoleId" asp-items="roles" class="form-select select2">
+                                <option value="">Оберіть роль ресурсу</option>
+                            </select>
+                            <span asp-validation-for="ResourceRoleId" class="text-danger"></span>
+                        </div>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Назад</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        initSelect2();
+        document.addEventListener('DOMContentLoaded', function () {
+            const resourceSelect = document.getElementById('resource-select');
+            const resourceInfoBox = document.getElementById('resource-info');
+            const resourceDetails = document.getElementById('resource-details');
+
+            $(resourceSelect).on('select2:select', function (e) {
+                const resourceId = e.params.data.id;
+                fetch(`/api/resources/${resourceId}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        resourceDetails.innerHTML = `
+                            <div><strong>Тип:</strong> ${data.resourceType}</div>
+                            <div><strong>Опис:</strong> ${data.description || '(немає)'}</div>
+                            <div><strong>Розташування:</strong> ${data.location}</div>
+                            <div><strong>Відповідальний:</strong> ${data.responsible}</div>
+                        `;
+                        resourceInfoBox.style.display = 'block';
+                    })
+                    .catch(() => {
+                        resourceInfoBox.style.display = 'none';
+                    });
+            });
+        });
+
+    </script>
+}

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ITBaza.Models.Enums;
+using System;
 using System.Collections.Generic;
 
 namespace ITBaza.Models;
@@ -13,7 +14,7 @@ public partial class Person
 
     public string? MiddleName { get; set; }
 
-    public DateOnly BirthDate { get; set; }
+    public DateOnly? BirthDate { get; set; }
 
     public DateOnly? HireDate { get; set; }
 
@@ -25,7 +26,7 @@ public partial class Person
 
     public int? VacationId { get; set; }
 
-    public string WorkType { get; set; } = null!;
+    public WorkType? WorkType { get; set; }
 
     public int? PlacementId { get; set; }
 

@@ -1,43 +1,60 @@
-﻿using ITBaza.Controllers;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using ITBaza.Models;
-using Microsoft.AspNetCore.Mvc.Filters;
 
-[Route("Dictonary/[controller]/{action=Index}")]
-public abstract class DirectoryControllerBase<TEntity, TContext> : Controller
+[Route("Accounting/[controller]/{action=Index}")]
+public abstract class AccountingControllerBase<TEntity, TContext> : Controller
     where TEntity : class
     where TContext : DbContext
 {
     protected readonly TContext _ctx;
 
-    protected DirectoryControllerBase(TContext ctx)
+    protected AccountingControllerBase(TContext ctx)
     {
         _ctx = ctx;
     }
 
+    protected virtual string ViewFolder => $"Views/AccountingView/{GetFolderName()}";
+
+    private string GetFolderName()
+    {
+        string name = typeof(TEntity).Name;
+        return name switch
+        {
+            "Person" => "People",
+            _ => name + "s"
+        };
+    }
+
+    protected abstract IQueryable<TEntity> BuildQuery(string? search, bool includeDismissed);
+
     protected virtual Task<bool> ExistsAsync(TEntity entity) => Task.FromResult(false);
+
+    protected virtual void PrepSelectLists(object? entity = null) { }
 
     public override void OnActionExecuting(ActionExecutingContext context)
     {
-        ViewBag.SidebarMenu = DictionaryMenuItem.GetDictionaryMenu();
+        ViewBag.AccountingMenu = AccountingMenuItem.GetMenu();
         base.OnActionExecuting(context);
     }
 
-    protected abstract IQueryable<TEntity> BuildQuery(string? search);
-
-    // ----- INDEX (GET) -----
     [HttpGet]
     [Route("")]
-    public async Task<IActionResult> Index(string? search)
+    public async Task<IActionResult> Index(string? search, bool includeDismissed = false)
     {
-        var data = await BuildQuery(search).Take(500).ToListAsync();
+        var query = BuildQuery(search, includeDismissed);
+
+        var data = await query
+            .Take(500)
+            .ToListAsync();
+
         ViewBag.Search = search;
+        ViewBag.IncludeDismissed = includeDismissed;
+
         return View("Index", data);
     }
 
-    // ----- CREATE (GET) -----
-    [HttpGet]
     public virtual IActionResult Create()
     {
         var entity = Activator.CreateInstance<TEntity>();
@@ -45,9 +62,7 @@ public abstract class DirectoryControllerBase<TEntity, TContext> : Controller
         return View("Create", entity);
     }
 
-    // ----- CREATE (POST) -----
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public virtual async Task<IActionResult> Create(TEntity entity)
     {
         if (!ModelState.IsValid)
@@ -66,11 +81,9 @@ public abstract class DirectoryControllerBase<TEntity, TContext> : Controller
         _ctx.Add(entity);
         await _ctx.SaveChangesAsync();
         TempData["Success"] = "Створено успішно!";
-        return View("Create", entity);
+        return RedirectToAction(nameof(Index));
     }
 
-    // ----- EDIT (GET) -----
-    [HttpGet]
     public virtual async Task<IActionResult> Edit(int id)
     {
         var entity = await _ctx.Set<TEntity>().FindAsync(id);
@@ -80,9 +93,7 @@ public abstract class DirectoryControllerBase<TEntity, TContext> : Controller
         return View("Edit", entity);
     }
 
-    // ----- EDIT (POST) -----
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public virtual async Task<IActionResult> Edit(int id, TEntity entity)
     {
         if (id != (int)typeof(TEntity).GetProperty("Id")!.GetValue(entity)!)
@@ -96,12 +107,19 @@ public abstract class DirectoryControllerBase<TEntity, TContext> : Controller
 
         _ctx.Update(entity);
         await _ctx.SaveChangesAsync();
-        TempData["Success"] = "Зміни збережено";
-        return View("Edit", entity);
+        TempData["Success"] = "Зміни збережено!";
+        return RedirectToAction(nameof(Index));
     }
 
-    // ----- DELETE (GET) -----
-    [HttpGet]
+    public virtual async Task<IActionResult> Details(int id)
+    {
+        var entity = await _ctx.Set<TEntity>().FindAsync(id);
+        if (entity == null) return NotFound();
+
+        PrepSelectLists(entity);
+        return View("Details", entity);
+    }
+
     public async Task<IActionResult> Delete(int id)
     {
         var entity = await _ctx.Set<TEntity>().FindAsync(id);
@@ -110,32 +128,17 @@ public abstract class DirectoryControllerBase<TEntity, TContext> : Controller
         return View("Delete", entity);
     }
 
-    // ----- DELETE (POST) -----
-    [HttpPost]
-    [ActionName("Delete")]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var entity = await _ctx.Set<TEntity>().FindAsync(id);
-        if (entity != null) _ctx.Remove(entity);
+        if (entity != null)
+        {
+            _ctx.Remove(entity);
+            await _ctx.SaveChangesAsync();
+        }
 
-        await _ctx.SaveChangesAsync();
-        TempData["Success"] = "Запис вилучено";
-        return RedirectToAction("Index");
+        TempData["Success"] = "Запис успішно видалено.";
+        return RedirectToAction(nameof(Index));
     }
-
-    // ----- DETAILS (GET) -----
-    [HttpGet]
-    public virtual async Task<IActionResult> Details(int id)
-    {
-        var entity = await _ctx.Set<TEntity>().FindAsync(id);
-        if (entity == null)
-            return NotFound();
-
-        PrepSelectLists(entity);
-        return View("Details", entity);
-    }
-
-    // ----- Віртуальний метод для SelectList -----
-    protected virtual void PrepSelectLists(object? entity = null) { }
 }

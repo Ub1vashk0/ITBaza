@@ -1,0 +1,74 @@
+﻿@model IEnumerable<ITBaza.Models.Person>
+
+@{
+    ViewData["Title"] = "Працівники";
+    var menu = ViewBag.AccountingMenu as List<ITBaza.Models.AccountingMenuItem>;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AccountingSidebar" model="@menu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            <form method="get" asp-action="Index" class="row mb-3 align-items-center">
+                <div class="col-md-8 d-flex gap-2">
+                    <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Пошук ПІБ, департамент, відділ, місто..." />
+                    <div class="form-check align-self-center">
+                        <input class="form-check-input" type="checkbox" name="includeDismissed" value="true" @(ViewBag.IncludeDismissed ? "checked" : "") id="dismissedCheck">
+                        <label class="form-check-label" for="dismissedCheck">
+                            Враховувати звільнених
+                        </label>
+                    </div>
+                    <button class="btn btn-primary">Пошук</button>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a asp-action="Create" class="btn btn-success">+ Додати працівника</a>
+                </div>
+            </form>
+
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ПІБ</th>
+                        <th>Департамент</th>
+                        <th>Відділ</th>
+                        <th>Посада</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
+                                    @item.LastName @item.FirstName @item.MiddleName
+                                </a>
+                            </td>
+                            <td>@item.Vacation?.Department?.Name</td>
+                            <td>@item.Vacation?.Division?.Name</td>
+                            <td>@item.Vacation?.Name</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id" title="Редагувати" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (!Model.Any())
+            {
+                <p class="text-muted">Записів не знайдено.</p>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

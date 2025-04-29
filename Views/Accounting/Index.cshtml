@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Облік";
+    var menu = ViewBag.AccountingMenu as List<ITBaza.Models.AccountingMenuItem>;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AccountingSidebar" model="@menu" />
+        </div>
+        <div class="col-md-9">
+            <h2>Облік</h2>
+            <p>Оберіть розділ для перегляду та керування обліком користувачів, доступів або номерів.</p>
+        </div>
+    </div>
+</div>

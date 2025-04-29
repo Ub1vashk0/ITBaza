@@ -1,0 +1,89 @@
+﻿@model ITBaza.Models.Person
+
+@{
+    ViewData["Title"] = "Деталі працівника";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AccountingSidebar" model="@ViewBag.AccountingMenu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+            <h3>@Model.LastName @Model.FirstName @Model.MiddleName</h3>
+            <div class="card mb-3">
+                <div class="card-header">Основна інформація</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-4">
+                        <strong>Прізвище:</strong> @Model.LastName
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Ім'я:</strong> @Model.FirstName
+                    </div>
+                    <div class="col-md-4">
+                        <strong>По батькові:</strong> @Model.MiddleName
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Дата народження:</strong> @Model.BirthDate?.ToString("dd.MM.yyyy")
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Тип роботи:</strong> @Model.WorkType
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Дата прийому:</strong> @Model.HireDate?.ToString("dd.MM.yyyy")
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Дата звільнення:</strong> @Model.DismissalDate?.ToString("dd.MM.yyyy")
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Контактна інформація</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-6">
+                        <strong>Телефон:</strong> @Model.PersonalPhone
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Електронна пошта:</strong> @Model.Email
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Посада</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-4">
+                        <strong>Департамент:</strong> @Model.Vacation?.Department?.Name
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Відділ:</strong> @Model.Vacation?.Division?.Name
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Вакансія:</strong> @Model.Vacation?.Name
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Розміщення</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-4">
+                        <strong>Країна:</strong> @Model.Placement?.Country?.Name
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Місто:</strong> @Model.Placement?.City
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Офіс:</strong> @Model.Placement?.Office
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
+            </div>
+        </div>
+    </div>
+</div>
