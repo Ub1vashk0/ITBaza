@@ -8,8 +8,9 @@ builder.Services.AddControllersWithViews()
     {
         options.ViewLocationFormats.Clear(); // Почистимо стандартні
         options.ViewLocationFormats.Add("/Views/{1}/{0}.cshtml");
-        options.ViewLocationFormats.Add("/Views/DictonaryView/{1}/{0}.cshtml"); // ✅ це додає твій шлях
-        options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml"); // Shared залишаємо
+        options.ViewLocationFormats.Add("/Views/DictonaryView/{1}/{0}.cshtml");
+        options.ViewLocationFormats.Add("/Views/AccountingView/{1}/{0}.cshtml");
+        options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
     });
 //builder.Services.AddControllersWithViews()
     //.AddApplicationPart(typeof(DirectoryControllerBase<,>).Assembly);
@@ -37,7 +38,7 @@ app.MapControllers(); // для атрибутивного роутінгу
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}"); // fallback
+    pattern: "{controller=Accounting}/{action=Index}/{id?}"); // fallback
 
 app.Run();
 

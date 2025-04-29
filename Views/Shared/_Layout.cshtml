@@ -6,8 +6,7 @@
     <title>@ViewData["Title"] - ITBaza</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ITBaza.styles.css" asp-append-version="true" />
-    <link href="~/css/dictionary.css" rel="stylesheet" />   
+    <link rel="stylesheet" href="~/ITBaza.styles.css" asp-append-version="true" />   
     
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -15,7 +14,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ITBaza</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -30,26 +29,40 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Dictonary" asp-action="Index">Довідники</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Accounting" asp-action="Index">Облік</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Звіти</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Адміністрування</a>
+                        </li>
                     </ul>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-person-circle fs-4"></i>
+                        <span class="text-dark">@User.Identity?.Name - Логін</span>
+                        <form method="post" asp-area="" asp-controller="Account" asp-action="Logout">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Вийти</button>
+                        </form>
                 </div>
             </div>
         </nav>
     </header>
-    <main role="main" class="pb-3">
+    <main role="main" class="pb-3" style="padding-top: 70px;">
         @RenderBody()
     </main>
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - ITBaza - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - ITBaza - <a asp-area="" asp-controller="Home" asp-action="">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/dictionary.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script> <!-- Перший: jQuery -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> <!-- Другий: Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> <!-- Третій: Select2 -->
+    <script src="~/js/site.js" asp-append-version="true"></script> <!-- Четвертий: Твій код -->
+    <script src="~/js/dictionary.js"></script> <!-- Твій код, де є select2 виклик -->
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
