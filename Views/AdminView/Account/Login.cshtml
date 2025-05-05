@@ -1,0 +1,52 @@
+﻿@model LoginViewModel
+
+@{
+    Layout = "_EmptyLayout";
+    ViewData["Title"] = "Вхід до системи";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">@ViewData["Title"]</h4>
+                </div>
+                <div class="card-body">
+
+                    @* Вивід загальної помилки входу *@
+                    @if (ViewData.ModelState.ErrorCount > 0 && ViewData.ModelState[""]?.Errors.Count > 0)
+                    {
+                        <div class="alert alert-danger">
+                            @foreach (var error in ViewData.ModelState[""].Errors)
+                            {
+                                <div>@error.ErrorMessage</div>
+                            }
+                        </div>
+                    }
+
+                    <form asp-action="Login" method="post">
+                        <div class="mb-3">
+                            <label asp-for="Login" class="form-label">Логін</label>
+                            <input asp-for="Login" class="form-control" placeholder="Введіть логін" />
+                            <span asp-validation-for="Login" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">Пароль</label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Введіть пароль" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Увійти</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

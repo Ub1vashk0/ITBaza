@@ -1,36 +1,51 @@
 ﻿@model ITBaza.Models.Access
-
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Перегляд доступу";
+    var menu = ViewBag.AccountingMenu as List<ITBaza.Models.AccountingMenuItem>;
 }
 
-<h1>Details</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AccountingSidebar" model="@menu" />
+        </div>
 
-<div>
-    <h4>Access</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Login)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Login)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Resource)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Resource.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ResourceRole)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ResourceRole.Id)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            <div class="row">
+                <!-- Основна інформація -->
+                <div class="col-md-8">
+                    <dl class="row">
+                        <dt class="col-sm-4">ID доступу</dt>
+                        <dd class="col-sm-8">@Model.Id</dd>
+
+                        <dt class="col-sm-4">Логін</dt>
+                        <dd class="col-sm-8">@Model.Login</dd>
+
+                        <dt class="col-sm-4">Роль ресурсу</dt>
+                        <dd class="col-sm-8">@Model.ResourceRole?.RoleName</dd>
+                    </dl>
+
+                    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+                </div>
+
+                <!-- Бокова інформація про ресурс -->
+                <div class="col-md-4">
+                    <div class="card border-info mt-2">
+                        <div class="card-header bg-info text-white">
+                            Інформація про ресурс
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Назва:</strong> @Model.Resource?.Name</p>
+                            <p><strong>Тип:</strong> @Model.Resource?.ResourceType?.Name</p>
+                            <p><strong>Опис:</strong> @Model.Resource?.Description ?? "(немає)"</p>
+                            <p><strong>Розташування:</strong> @Model.Resource?.MainLocation</p>
+                            <p><strong>Відповідальний:</strong> @Model.Resource?.ResponsiblePerson?.LastName @Model.Resource?.ResponsiblePerson?.FirstName</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

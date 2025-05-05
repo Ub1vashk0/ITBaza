@@ -1,0 +1,65 @@
+﻿@model ITBaza.Models.SystemUser
+@{
+    ViewData["Title"] = "Додавання користувача";
+    var roles = ViewBag.Roles as SelectList;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminSideBar" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            <form asp-action="Create" method="post">
+                <div class="card mb-3">
+                    <div class="card-header">Дані користувача</div>
+                    <div class="card-body row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="Login" class="form-label">Логін</label>
+                            <input asp-for="Login" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="FullName" class="form-label">ПІБ</label>
+                            <input asp-for="FullName" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="RoleId" class="form-label">Роль</label>
+                            <select asp-for="RoleId" class="form-select" asp-items="roles">
+                                <option value="">Оберіть роль</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Пароль</label>
+                            <div class="input-group">
+                                <input name="Password" id="Password" class="form-control" />
+                                <button type="button" class="btn btn-outline-secondary" onclick="generatePassword()">Згенерувати</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Назад</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        function generatePassword() {
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%";
+            let password = "";
+            for (let i = 0; i < 10; i++) {
+                const rand = Math.floor(Math.random() * charset.length);
+                password += charset[rand];
+            }
+            document.getElementById("Password").value = password;
+        }
+    </script>
+}

@@ -1,0 +1,48 @@
+﻿@model ITBaza.Models.SystemUser
+
+@{
+    ViewData["Title"] = "Деталі користувача";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminSideBar" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+            <h3>@Model.Login</h3>
+
+            <div class="card mb-3">
+                <div class="card-header">Основна інформація</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-6"><strong>Логін:</strong> @Model.Login</div>
+                    <div class="col-md-6"><strong>Повне імʼя:</strong> @Model.FullName</div>
+                    <div class="col-md-6"><strong>Роль:</strong> @Model.Role?.Name</div>
+                    <div class="col-md-6"><strong>Активний:</strong> @(Model.IsActive == true ? "Так" : "Ні")</div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Права доступу</div>
+                <div class="card-body">
+                    <strong>Інформація про доступ:</strong><br />
+                    <pre>@Model.InfoAccessRights</pre>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Активність</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-6"><strong>Останній вхід:</strong> @Model.LastLoginDate?.ToString("dd.MM.yyyy HH:mm")</div>
+                    <div class="col-md-6"><strong>Остання зміна пароля:</strong> @Model.LastPasswordChangeDate?.ToString("dd.MM.yyyy HH:mm")</div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редагувати</a>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Назад до списку</a>
+            </div>
+        </div>
+    </div>
+</div>

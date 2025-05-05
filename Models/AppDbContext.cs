@@ -48,7 +48,6 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Vacation> Vacations { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=195.191.126.26,64121;Initial Catalog=AccessManagementSystem;Persist Security Info=True;User ID=superadmin;Password=123;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -166,7 +165,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Puk1).HasMaxLength(20);
             entity.Property(e => e.Puk2).HasMaxLength(20);
             entity.Property(e => e.SimSerialNumber).HasMaxLength(100);
-            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.Status).HasMaxLength(50).HasConversion<string>();
 
             entity.HasOne(d => d.Operator).WithMany(p => p.PhoneNumbers)
                 .HasForeignKey(d => d.OperatorId)

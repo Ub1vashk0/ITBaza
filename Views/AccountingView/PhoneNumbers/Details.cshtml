@@ -1,0 +1,66 @@
+﻿@model ITBaza.Models.PhoneNumber
+@using ITBaza.Helpers
+@using ITBaza.Models.Enums
+
+@{
+    ViewData["Title"] = "Деталі номера";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AccountingSidebar" model="@ViewBag.AccountingMenu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+            <h3>@Model.Number</h3>
+
+            <div class="card mb-3">
+                <div class="card-header">Інформація про номер</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-4">
+                        <strong>Номер:</strong> @Model.Number
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Оператор:</strong> @Model.Operator?.Name
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Статус:</strong> @Model.Status?.GetEnumDisplayName()
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Технічна інформація</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-6">
+                        <strong>SIM серійний номер:</strong> @Model.SimSerialNumber
+                    </div>
+                    <div class="col-md-3">
+                        <strong>PIN1:</strong> @Model.Pin1
+                    </div>
+                    <div class="col-md-3">
+                        <strong>PIN2:</strong> @Model.Pin2
+                    </div>
+                    <div class="col-md-3">
+                        <strong>PUK1:</strong> @Model.Puk1
+                    </div>
+                    <div class="col-md-3">
+                        <strong>PUK2:</strong> @Model.Puk2
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Коментар</div>
+                <div class="card-body">
+                    <p>@Model.Comment</p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
+            </div>
+        </div>
+    </div>
+</div>

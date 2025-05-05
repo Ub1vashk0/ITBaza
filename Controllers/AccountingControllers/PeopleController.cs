@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 
 public class PeopleController : AccountingControllerBase<Person, AppDbContext>
 {
@@ -53,71 +54,8 @@ public class PeopleController : AccountingControllerBase<Person, AppDbContext>
     }
     protected override void PrepSelectLists(object? entity = null)
     {
-        var person = _ctx.People
-        .Include(p => p.Vacation)
-        .ThenInclude(v => v.Division)
-        .FirstOrDefault(p => p.Id == ((Person)entity).Id);
-
-        //Департаменти — для першого випадаючого списку
-        ViewBag.Departments = new SelectList(_ctx.Departments, "Id", "Name"); ;
-        // Якщо є обрана вакансія — отримуємо пов'язані дані
-        int? selectedDepartmentId = person?.Vacation?.Division?.DepartmentId;
-        int? selectedDivisionId = person?.Vacation?.DivisionId;
-        int? selectedVacationId = person?.VacationId;
-
-        ViewBag.SelectedDepartmentId = selectedDepartmentId?.ToString();
-        ViewBag.SelectedDivisionId = selectedDivisionId?.ToString();
-        ViewBag.SelectedVacationId = selectedVacationId?.ToString();
-
-        if (selectedDepartmentId.HasValue)
-        {
-            var divisions = _ctx.Divisions
-                .Where(d => d.DepartmentId == selectedDepartmentId)
-                .ToList();
-            ViewBag.Divisions = new SelectList(divisions, "Id", "Name", selectedDivisionId);
-        }
-        else
-        {
-            Console.WriteLine("hueta");
-        }
-
-        if (selectedDivisionId.HasValue)
-        {
-            var vacations = _ctx.Vacations
-                .Where(v => v.DivisionId == selectedDivisionId)
-                .ToList();
-            ViewBag.Vacations = new SelectList(vacations, "Id", "Name", selectedVacationId);
-        }
-
-        person = _ctx.People
-            .Include(p => p.Placement)
-            .FirstOrDefault(p => p.Id == ((Person)entity).Id); 
-
-        int? selectedCountryID = person?.Placement?.CountryId;
-        string? selectedCityName = person?.Placement?.City;
-        // Якщо є розміщення — підготуємо країну, місто та офіс
-        if (person?.Placement != null)
-        {
-            ViewBag.SelectedCountryId = selectedCountryID.ToString();
-            ViewBag.SelectedCityName = selectedCityName;
-            ViewBag.SelectedOfficeName = person.Placement.Office;
-
-            var cities = _ctx.Placements
-                .Where(p => p.CountryId == selectedCountryID)
-                .ToList();
-
-            ViewBag.Cities = new SelectList(cities, "City", "City", selectedCountryID);
-
-            var offices = _ctx.Placements
-                .Where(p => p.City == selectedCityName)
-                .ToList();
-
-            ViewBag.Offices = new SelectList(offices, "Office", "Office", selectedCityName);
-        }
-
-        //Для вибору країн — лише список країн(міста та офіси — через JS)
-        var countries = _ctx.Countries.ToList();
-        ViewBag.Countries = new SelectList(countries, "Id", "Name");
+        ViewBag.Departments = new SelectList(_ctx.Departments, "Id", "Name");
+        ViewBag.Countries = new SelectList(_ctx.Countries, "Id", "Name");
     }
     public override async Task<IActionResult> Details(int id)
     {
@@ -137,6 +75,22 @@ public class PeopleController : AccountingControllerBase<Person, AppDbContext>
 
         return View("Details", person);
     }
+    public override async Task<IActionResult> Edit(int id)
+    {
+        var person = await _ctx.People
+            .Include(p => p.Vacation)
+                .ThenInclude(v => v.Division)
+            .Include(p => p.Vacation)
+                .ThenInclude(v => v.Department)
+            .Include(p => p.Placement)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (person == null)
+            return NotFound();
+
+        await LoadEditSelectLists(person);
+        return View("Edit", person);
+    }
 
     protected override async Task<bool> ExistsAsync(Person entity)
     {
@@ -147,6 +101,63 @@ public class PeopleController : AccountingControllerBase<Person, AppDbContext>
             p.Id != entity.Id
         );
     }
+    private async Task LoadEditSelectLists(Person person)
+    {
+        PrepSelectLists();
+        Console.WriteLine("WORK METHOD");
+        int? selectedDepartmentId = person?.Vacation?.Division?.DepartmentId;
+        int? selectedDivisionId = person?.Vacation?.DivisionId;
+        int? selectedVacationId = person?.VacationId;
+
+        ViewBag.SelectedDepartmentId = selectedDepartmentId?.ToString();
+        ViewBag.SelectedDivisionId = selectedDivisionId?.ToString();
+        ViewBag.SelectedVacationId = selectedVacationId?.ToString();
+
+        if (selectedDepartmentId.HasValue)
+        {
+            var divisions = await _ctx.Divisions
+                .Where(d => d.DepartmentId == selectedDepartmentId)
+                .ToListAsync();
+            ViewBag.Divisions = new SelectList(divisions, "Id", "Name", selectedDivisionId);
+        }
+
+        if (selectedDivisionId.HasValue)
+        {
+            var vacations = await _ctx.Vacations
+                .Where(v => v.DivisionId == selectedDivisionId)
+                .ToListAsync();
+            ViewBag.Vacations = new SelectList(vacations, "Id", "Name", selectedVacationId);
+        }
+
+        ViewBag.Countries = new SelectList(_ctx.Countries, "Id", "Name");
+
+        int? selectedCountryId = person?.Placement?.CountryId;
+        string? selectedCityName = person?.Placement?.City;
+        string? selectedOfficeName = person?.Placement?.Office;
+
+        ViewBag.SelectedCountryId = selectedCountryId?.ToString();
+        ViewBag.SelectedCityName = selectedCityName;
+        ViewBag.SelectedOfficeName = selectedOfficeName;
+
+        if (selectedCountryId.HasValue)
+        {
+            var cities = await _ctx.Placements
+                .Where(p => p.CountryId == selectedCountryId)
+                .ToListAsync();
+
+            ViewBag.Cities = new SelectList(cities, "City", "City", selectedCityName);
+        }
+
+        if (!string.IsNullOrEmpty(selectedCityName))
+        {
+            var offices = await _ctx.Placements
+                .Where(p => p.City == selectedCityName)
+                .ToListAsync();
+
+            ViewBag.Offices = new SelectList(offices, "Office", "Office", selectedOfficeName);
+        }
+    }
+
 }
 [Route("api/people")]
 [ApiController]

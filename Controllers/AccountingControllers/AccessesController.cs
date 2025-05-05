@@ -19,13 +19,28 @@ public class AccessesController : AccountingControllerBase<Access, AppDbContext>
             query = query.Where(a =>
                 a.Login.Contains(search) ||
                 a.Resource.Name.Contains(search) ||
-                a.ResourceRole.RoleName.Contains(search)
+                a.ResourceRole.RoleName.Contains(search) ||
+                a.Id.ToString().Contains(search)
             );
         }
 
         return query;
     }
+    public override async Task<IActionResult> Details(int id)
+    {
+        var access = await _ctx.Accesses
+            .Include(a => a.Resource)
+                .ThenInclude(r => r.ResourceType)
+            .Include(a => a.Resource)
+                .ThenInclude(r => r.ResponsiblePerson)
+            .Include(a => a.ResourceRole)
+            .FirstOrDefaultAsync(a => a.Id == id);
 
+        if (access == null)
+            return NotFound();
+
+        return View("Details", access);
+    }
     protected override void PrepSelectLists(object? entity = null)
     {
         ViewBag.Resources = new SelectList(_ctx.Resources, "Id", "Name");
@@ -72,4 +87,15 @@ public class ResourcesApiController : ControllerBase
             Responsible = $"{resource.ResponsiblePerson?.LastName} {resource.ResponsiblePerson?.FirstName}"
         });
     }
+    [HttpGet("{id}/roles")]
+    public async Task<IActionResult> GetRolesForResource(int id)
+    {
+        var roles = await _context.ResourceRoles
+            .Where(rr => rr.ResourceId == id)
+            .Select(rr => new { rr.Id, rr.RoleName })
+            .ToListAsync();
+
+        return Ok(roles);
+    }
+
 }

@@ -50,7 +50,7 @@
                         
                         <div class="col-md-6 mb-3">
                             <label asp-for="ResourceRoleId" class="form-label">Роль</label>
-                            <select asp-for="ResourceRoleId" asp-items="roles" class="form-select select2">
+                            <select id="resource-role-select" asp-for="ResourceRoleId" asp-items="roles" class="form-select select2">
                                 <option value="">Оберіть роль ресурсу</option>
                             </select>
                             <span asp-validation-for="ResourceRoleId" class="text-danger"></span>
@@ -69,29 +69,45 @@
     @await Html.PartialAsync("_ValidationScriptsPartial")
     <script>
         initSelect2();
+
         document.addEventListener('DOMContentLoaded', function () {
             const resourceSelect = document.getElementById('resource-select');
             const resourceInfoBox = document.getElementById('resource-info');
             const resourceDetails = document.getElementById('resource-details');
+            const roleSelect = document.getElementById('resource-role-select');
 
             $(resourceSelect).on('select2:select', function (e) {
                 const resourceId = e.params.data.id;
+
+                // Отримати інформацію про ресурс
                 fetch(`/api/resources/${resourceId}`)
                     .then(r => r.json())
                     .then(data => {
                         resourceDetails.innerHTML = `
-                            <div><strong>Тип:</strong> ${data.resourceType}</div>
-                            <div><strong>Опис:</strong> ${data.description || '(немає)'}</div>
-                            <div><strong>Розташування:</strong> ${data.location}</div>
-                            <div><strong>Відповідальний:</strong> ${data.responsible}</div>
-                        `;
+                                <div><strong>Тип:</strong> ${data.resourceType}</div>
+                                <div><strong>Опис:</strong> ${data.description || '(немає)'}</div>
+                                <div><strong>Розташування:</strong> ${data.location}</div>
+                                <div><strong>Відповідальний:</strong> ${data.responsible}</div>
+                            `;
                         resourceInfoBox.style.display = 'block';
                     })
-                    .catch(() => {
-                        resourceInfoBox.style.display = 'none';
+                    .catch(() => resourceInfoBox.style.display = 'none');
+
+                // Завантажити ролі для ресурсу
+                fetch(`/api/resources/${resourceId}/roles`)
+                    .then(r => r.json())
+                    .then(data => {
+                        roleSelect.innerHTML = '<option value="">Оберіть роль ресурсу</option>';
+                        data.forEach(role => {
+                            const option = document.createElement('option');
+                            option.value = role.id;
+                            option.textContent = role.roleName;
+                            roleSelect.appendChild(option);
+                        });
+                        $(roleSelect).trigger('change'); // оновити select2
                     });
             });
         });
-
     </script>
+
 }

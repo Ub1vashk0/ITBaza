@@ -1,0 +1,105 @@
+﻿@model ITBaza.Models.SystemUser
+@{
+    ViewData["Title"] = "Редагування користувача";
+    var roles = ViewBag.Roles as SelectList;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminSideBar" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="card mb-3">
+                    <div class="card-header">Основна інформація</div>
+                    <div class="card-body row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Login" class="form-label">Логін</label>
+                            <input asp-for="Login" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label">Повне імʼя</label>
+                            <input asp-for="FullName" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="RoleId" class="form-label">Роль</label>
+                            <select asp-for="RoleId" asp-items="roles" class="form-select select2">
+                                <option value="">Оберіть роль</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="IsActive" class="form-label">Активний</label>
+                            <select asp-for="IsActive" class="form-select">
+                                <option value="true">Так</option>
+                                <option value="false">Ні</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">Безпека</div>
+                    <div class="card-body row g-3">
+                        <div class="col-md-6">
+                            <div class="col-md-6">
+                                <label class="form-label">Пароль</label>
+                                <div class="input-group">
+                                    <input type="text" id="generatedPassword" class="form-control" placeholder="Згенерований пароль" />
+                                    <button type="button" class="btn btn-outline-secondary" onclick="generatePassword()">Згенерувати</button>
+                                </div>
+                                <input type="hidden" asp-for="PasswordHash" id="PasswordHash" />
+                            </div>
+
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="LastPasswordChangeDate" class="form-label">Остання зміна пароля</label>
+                            <input asp-for="LastPasswordChangeDate" class="form-control" type="datetime-local" />
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card mb-3">
+                    <div class="card-header">Активність</div>
+                    <div class="card-body row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="LastLoginDate" class="form-label">Останній вхід</label>
+                            <input asp-for="LastLoginDate" class="form-control" type="datetime-local" readonly/>
+                        </div>
+                        <div class="col-md-12">
+                            <label asp-for="InfoAccessRights" class="form-label">Права доступу (JSON/текст)</label>
+                            <textarea asp-for="InfoAccessRights" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Назад</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        function generatePassword() {
+            const length = 12;
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%^&*";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+
+            document.getElementById("generatedPassword").value = password;
+            document.getElementById("PasswordHash").value = password; // Поки просто підставляємо як є
+        }
+    </script>
+}

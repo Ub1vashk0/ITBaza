@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ITBaza.Models.Enums;
+using System;
 using System.Collections.Generic;
 
 namespace ITBaza.Models;
@@ -7,11 +8,11 @@ public partial class PhoneNumber
 {
     public int Id { get; set; }
 
-    public string? Number { get; set; }
+    public string Number { get; set; } = null!;
 
     public int? OperatorId { get; set; }
 
-    public string? Status { get; set; }
+    public PhoneNumberStatus? Status { get; set; }
 
     public string? SimSerialNumber { get; set; }
 

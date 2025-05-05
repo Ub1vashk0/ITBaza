@@ -1,0 +1,53 @@
+﻿@model List<ITBaza.Models.Role>
+
+@{
+    ViewData["Title"] = "Ролі користувачів";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminSideBar" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+            <form method="get" asp-action="Index" class="row mb-3 align-items-center">
+                <div class="col-md-8">
+                    <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Пошук за назвою ролі..." />
+                </div>
+                <div class="col-md-4 text-end">
+                    <button type="submit" class="btn btn-primary">Пошук</button>
+                    <a asp-action="Create" class="btn btn-success ms-2">+ Додати роль</a>
+                </div>
+            </form>
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info">Ролі ще не створено.</div>
+            }
+            else
+            {
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Назва ролі</th>
+                            <th>Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var role in Model)
+                        {
+                            <tr>
+                                <td>@role.Name</td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@role.Id" class="btn btn-sm btn-outline-secondary" title="Редагувати">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
