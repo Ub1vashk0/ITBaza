@@ -250,4 +250,32 @@ public class PeopleApiController : ControllerBase
 
         return Ok(placement);
     }
+    [HttpGet("get-info/{personId}")]
+    public async Task<IActionResult> GetPersonInfo(int personId)
+    {
+        var person = await _context.People
+            .Include(p => p.Vacation)
+                .ThenInclude(v => v.Department)
+            .Include(p => p.Vacation)
+                .ThenInclude(v => v.Division)
+            .Include(p => p.Placement)
+                .ThenInclude(p => p.Country)
+            .FirstOrDefaultAsync(p => p.Id == personId);
+
+        if (person == null)
+            return NotFound(new { message = "Працівника не знайдено" });
+
+        var result = new
+        {
+            fullName = $"{person.LastName} {person.FirstName} {person.MiddleName}",
+            department = person.Vacation?.Department?.Name,
+            division = person.Vacation?.Division?.Name,
+            vacation = person.Vacation?.Name,
+            country = person.Placement?.Country?.Name,
+            city = person.Placement?.City,
+            office = person.Placement?.Office
+        };
+
+        return Ok(result);
+    }
 }

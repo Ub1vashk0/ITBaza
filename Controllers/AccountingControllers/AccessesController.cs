@@ -55,8 +55,7 @@ public class AccessesController : AccountingControllerBase<Access, AppDbContext>
             a.ResourceRoleId == entity.ResourceRoleId &&
             a.Id != entity.Id);
     }
-    
-}
+    }
 [Route("api/resources")]
 [ApiController]
 public class ResourcesApiController : ControllerBase
@@ -97,5 +96,31 @@ public class ResourcesApiController : ControllerBase
 
         return Ok(roles);
     }
+    [HttpGet("access/{accessId}/full-info")]
+    public async Task<IActionResult> GetFullAccessInfo(int accessId)
+    {
+        var access = await _context.Accesses
+            .Include(a => a.Resource)
+                .ThenInclude(r => r.ResourceType)
+            .Include(a => a.Resource)
+                .ThenInclude(r => r.ResponsiblePerson)
+            .Include(a => a.ResourceRole)
+            .FirstOrDefaultAsync(a => a.Id == accessId);
 
+        if (access == null || access.Resource == null)
+            return NotFound(new { message = "Доступ або ресурс не знайдено" });
+
+        var resource = access.Resource;
+
+        return Ok(new
+        {
+            name = resource.Name,
+            resourceType = resource.ResourceType?.Name,
+            location = resource.MainLocation,
+            description = resource.Description,
+            responsible = $"{resource.ResponsiblePerson?.LastName} {resource.ResponsiblePerson?.FirstName}",
+            role = access.ResourceRole?.RoleName
+        });
+    }
 }
+
