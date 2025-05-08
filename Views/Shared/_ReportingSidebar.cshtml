@@ -1,0 +1,17 @@
+﻿@{
+    var menu = ITBaza.Controllers.ReportingControlers.ReportingItemMenu.GetReportingMenu();
+}
+
+<ul class="list-group">
+    @foreach (var item in menu)
+    {
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var isActive = string.Equals(currentController, item.Controller, StringComparison.OrdinalIgnoreCase);
+
+        <li class="list-group-item @(isActive ? "active fw-bold" : "")">
+            <a asp-controller="@item.Controller" asp-action="Index" class="nav-link @(isActive ? "text-white" : "text-dark")">
+                @item.Title
+            </a>
+        </li>
+    }
+</ul>

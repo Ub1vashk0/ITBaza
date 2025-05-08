@@ -26,4 +26,5 @@ public partial class SystemUser
     public virtual ICollection<AccessOperation> AccessOperations { get; set; } = new List<AccessOperation>();
 
     public virtual Role? Role { get; set; } = null!;
+    public virtual ICollection<PhoneNumberOperation> PhoneNumberOperations { get; set; } = new List<PhoneNumberOperation>();
 }

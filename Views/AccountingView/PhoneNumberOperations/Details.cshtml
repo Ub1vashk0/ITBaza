@@ -1,0 +1,94 @@
+﻿@model ITBaza.Models.PhoneNumberOperation
+
+@{
+    ViewData["Title"] = "Деталі операції з номером";
+    var menu = ViewBag.AccountingMenu as List<ITBaza.Models.AccountingMenuItem>;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AccountingSidebar" model="@menu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            <div class="card mb-3">
+                <div class="card-header">Інформація про операцію</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-3">
+                        <strong>ID операції:</strong> @Model.Id
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Дата:</strong> @Model.ActionDate.ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Операція:</strong> @Model.Action
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Виконавець:</strong> @Model.Executor?.FullName
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Працівник</div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>ПІБ:</strong> @(Model.Person?.LastName + " " + Model.Person?.FirstName + " " + Model.Person?.MiddleName)
+                    </div>
+                    <div class="alert alert-secondary small">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Департамент:</strong> @Model.Person?.Vacation?.Department?.Name
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Відділ:</strong> @Model.Person?.Vacation?.Division?.Name
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Вакансія:</strong> @Model.Person?.Vacation?.Name
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Країна:</strong> @Model.Person?.Placement?.Country?.Name
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Місто:</strong> @Model.Person?.Placement?.City
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Офіс:</strong> @Model.Person?.Placement?.Office
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Номер телефону</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-4">
+                        <strong>Номер:</strong> @Model.PhoneNumber?.Number
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Оператор:</strong> @Model.PhoneNumber?.Operator?.Name
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Компанія:</strong> @Model.PhoneNumber?.Operator?.Corporation
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Країна:</strong> @Model.PhoneNumber?.Operator?.IdCountryNavigation?.Name
+                    </div>
+                    <div class="col-md-12">
+                        <strong>SIM серійний номер:</strong> @Model.PhoneNumber?.SimSerialNumber
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <a asp-action="Index" class="btn btn-secondary">Назад</a>
+            </div>
+        </div>
+    </div>
+</div>

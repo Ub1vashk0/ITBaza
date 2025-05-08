@@ -17,9 +17,10 @@ public partial class PhoneNumberOperation
 
     public int ExecutorId { get; set; }
 
-    public virtual Role? Executor { get; set; } = null!;
+    public virtual SystemUser? Executor { get; set; } = null!; 
 
     public virtual Person? Person { get; set; } = null!;
 
     public virtual PhoneNumber? PhoneNumber { get; set; } = null!;
 }
+

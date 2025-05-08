@@ -1,0 +1,93 @@
+﻿@model ITBaza.Models.Access
+@{
+    ViewData["Title"] = "Звіт по доступу";
+    var current = ViewBag.Current as List<ITBaza.Models.AccessOperation>;
+    var history = ViewBag.History as List<ITBaza.Models.AccessOperation>;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_ReportingSidebar" />
+        </div>
+        <div class="col-md-9">
+            <h2>Доступ: @Model.Login</h2>
+            <p><strong>Ресурс:</strong> @Model.Resource?.Name</p>
+            <p><strong>Роль доступу:</strong> @Model.ResourceRole?.RoleName</p>
+
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#current">Актуальна інформація</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#history">Історія</a>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-3">
+                <div class="tab-pane fade show active" id="current">
+                    @if (current != null && current.Any())
+                    {
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Працівник</th>
+                                    <th>Департамент</th>
+                                    <th>Відділ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in current)
+                                {
+                                    <tr>
+                                        <td>@($"{item.Person?.LastName} {item.Person?.FirstName}")</td>
+                                        <td>@item.Person?.Vacation?.Department?.Name</td>
+                                        <td>@item.Person?.Vacation?.Division?.Name</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">Немає актуальних доступів</div>
+                    }
+                </div>
+
+                <div class="tab-pane fade" id="history">
+                    @if (history != null && history.Any())
+                    {
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Працівник</th>
+                                    <th>Дія</th>
+                                    <th>Дата</th>
+                                    <th>Виконавець</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in history)
+                                {
+                                    <tr>
+                                        <td>@($"{item.Person?.LastName} {item.Person?.FirstName}")</td>
+                                        <td>@item.Action</td>
+                                        <td>@item.ActionDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                        <td>@item.Executor?.FullName</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">Історія відсутня</div>
+                    }
+                </div>
+            </div>
+
+            <a asp-action="Index" class="btn btn-secondary mt-3">Назад</a>
+        </div>
+    </div>
+</div>
+

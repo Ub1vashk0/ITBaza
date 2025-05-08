@@ -9,7 +9,5 @@ public partial class Role
 
     public string Name { get; set; } = null!;
 
-    public virtual ICollection<PhoneNumberOperation> PhoneNumberOperations { get; set; } = new List<PhoneNumberOperation>();
-
     public virtual ICollection<SystemUser> SystemUsers { get; set; } = new List<SystemUser>();
 }

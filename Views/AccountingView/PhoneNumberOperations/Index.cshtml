@@ -1,0 +1,59 @@
+﻿@model List<ITBaza.Models.PhoneNumberOperation>
+
+@{
+    ViewData["Title"] = "Операції з номерами";
+    var menu = ViewBag.AccountingMenu as List<ITBaza.Models.AccountingMenuItem>;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AccountingSidebar" model="@menu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            <div class="mb-3 d-flex gap-2">
+                <a asp-action="Create" class="btn btn-success">+ Надати номер</a>
+                <a asp-action="Revoke" class="btn btn-danger">− Вилучити номер</a>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info">Операцій не знайдено.</div>
+            }
+            else
+            {
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Працівник</th>
+                            <th>Номер</th>
+                            <th>Операція</th>
+                            <th>Дата</th>
+                            <th>Виконавець</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
+                                        @item.Id
+                                    </a>
+                                </td>
+                                <td>@(item.Person?.LastName) @(item.Person?.FirstName)</td>
+                                <td>@item.PhoneNumber?.Number</td>
+                                <td>@item.Action</td>
+                                <td>@item.ActionDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@item.Executor?.FullName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,176 @@
+﻿@model ITBaza.Models.PhoneNumberOperation
+
+@{
+    ViewData["Title"] = "Вилучення номера";
+    var menu = ViewBag.AccountingMenu as List<ITBaza.Models.AccountingMenuItem>;
+    var persons = ViewBag.Persons as SelectList;
+    var executorFullName = User.FindFirst("FullName")?.Value ?? "Невідомий";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AccountingSidebar" model="@menu" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            <form asp-action="Revoke" method="post">
+                <div class="alert alert-info">
+                    <i class="bi bi-person-badge"></i>
+                    <strong>Виконавець:</strong> @executorFullName
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">Працівник</div>
+                    <div class="card-body row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="PersonId" class="form-label">ПІБ працівника</label>
+                            <select asp-for="PersonId" class="form-select select2" asp-items="persons" id="person-select">
+                                <option value="">Оберіть працівника</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="person-info" class="alert alert-secondary small mt-2" style="display:none;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Департамент:</strong> <span id="info-department"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Відділ:</strong> <span id="info-division"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Вакансія:</strong> <span id="info-vacation"></span>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Країна:</strong> <span id="info-country"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Місто:</strong> <span id="info-city"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Офіс:</strong> <span id="info-office"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">Номер для вилучення</div>
+                    <div class="card-body row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="PhoneNumberId" class="form-label">Номер телефону</label>
+                            <select asp-for="PhoneNumberId" class="form-select select2" id="phone-select">
+                                <option value="">Оберіть номер</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="number-info" class="alert alert-secondary small mt-2" style="display:none;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Оператор:</strong> <span id="info-operator"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Компанія:</strong> <span id="info-corporation"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Країна:</strong> <span id="info-phone-country"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" asp-for="Action" value="скасовано" />
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-danger">Вилучити номер</button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Назад</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            $('#person-select').on('change', async function () {
+                const personId = $(this).val();
+                if (!personId) return;
+
+                try {
+                    const response = await fetch(`/api/phonenumbers/get-granted/${personId}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const phoneSelect = document.getElementById("phone-select");
+                        phoneSelect.innerHTML = '<option value="">Оберіть номер</option>';
+
+                        data.forEach(p => {
+                            const option = document.createElement("option");
+                            option.value = p.phoneNumberId;
+                            option.textContent = p.label;
+                            phoneSelect.appendChild(option);
+                        });
+                    }
+                } catch (error) {
+                    console.error("Помилка при завантаженні номерів:", error);
+                }
+            });
+            $('#person-select').on('select2:select', async function (e) {
+                const id = e.params.data.id;
+                if (!id) {
+                    document.getElementById("person-info").style.display = "none";
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/people/get-info/${id}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        document.getElementById("info-department").textContent = data.department || "-";
+                        document.getElementById("info-division").textContent = data.division || "-";
+                        document.getElementById("info-vacation").textContent = data.vacation || "-";
+                        document.getElementById("info-country").textContent = data.country || "-";
+                        document.getElementById("info-city").textContent = data.city || "-";
+                        document.getElementById("info-office").textContent = data.office || "-";
+                        document.getElementById("person-info").style.display = "block";
+                    } else {
+                        document.getElementById("person-info").style.display = "none";
+                    }
+                } catch (error) {
+                    console.error("Помилка при завантаженні інформації про працівника:", error);
+                    document.getElementById("person-info").style.display = "none";
+                }
+            });
+            $('#phone-select').on('select2:select', async function (e) {
+                const phoneId = e.params.data.id;
+                if (!phoneId) {
+                    document.getElementById("number-info").style.display = "none";
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/phonenumbers/info/${phoneId}`);
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        document.getElementById("info-operator").textContent = data.operatorName || "-";
+                        document.getElementById("info-corporation").textContent = data.corporation || "-";
+                        document.getElementById("info-phone-country").textContent = data.country || "-";
+
+                        document.getElementById("number-info").style.display = "block";
+                    } else {
+                        document.getElementById("number-info").style.display = "none";
+                    }
+                } catch (error) {
+                    console.error("Помилка при завантаженні інформації про номер:", error);
+                    document.getElementById("number-info").style.display = "none";
+                }
+            });
+        });
+    </script>
+}

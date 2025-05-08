@@ -1,0 +1,50 @@
+﻿@model List<ITBaza.Models.Person>
+@{
+    ViewData["Title"] = "Звіт по працівнику";
+    var search = ViewBag.Search as string;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_ReportingSidebar" />
+        </div>
+        <div class="col-md-9">
+            <h2>@ViewData["Title"]</h2>
+
+            <form method="get" asp-action="Index" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="search" value="@search" class="form-control" placeholder="Пошук ПІБ..." />
+                    <button type="submit" class="btn btn-primary">Шукати</button>
+                </div>
+            </form>
+
+            @if (Model.Any())
+            {
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ПІБ</th>
+                            <th>Дія</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var person in Model)
+                        {
+                            <tr>
+                                <td>@($"{person.LastName} {person.FirstName} {person.MiddleName}")</td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@person.Id" class="btn btn-sm btn-outline-secondary">Деталі</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (!string.IsNullOrWhiteSpace(search))
+            {
+                <div class="alert alert-info">Нічого не знайдено.</div>
+            }
+        </div>
+    </div>
+</div>

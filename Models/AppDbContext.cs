@@ -182,7 +182,7 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Executor).WithMany(p => p.PhoneNumberOperations)
                 .HasForeignKey(d => d.ExecutorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PhoneNumberOperation_Role");
+                .HasConstraintName("FK_PhoneNumberOperation_SystemUser");
 
             entity.HasOne(d => d.Person).WithMany(p => p.PhoneNumberOperations)
                 .HasForeignKey(d => d.PersonId)

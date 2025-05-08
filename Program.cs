@@ -15,6 +15,7 @@ builder.Services.AddControllersWithViews()
         options.ViewLocationFormats.Add("/Views/DictonaryView/{1}/{0}.cshtml");
         options.ViewLocationFormats.Add("/Views/AccountingView/{1}/{0}.cshtml");
         options.ViewLocationFormats.Add("/Views/AdminView/{1}/{0}.cshtml");
+        options.ViewLocationFormats.Add("/Views/ReportingView/{1}/{0}.cshtml");
         options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
     });
 
@@ -63,8 +64,8 @@ app.MapControllers(); // атрибутивна маршрутизація
 
 app.MapControllerRoute(
     name: "default",
-   pattern: "{controller=Account}/{action=Login}/"
-    //pattern: "{controller=Home}/{action=Index}/"
+    //pattern: "{controller=Account}/{action=Login}/"
+    pattern: "{controller=Home}/{action=Index}/"
     ); // fallback
 
 app.Run();

@@ -1,0 +1,93 @@
+﻿@model ITBaza.Models.Person
+@{
+    ViewData["Title"] = "Деталі працівника";
+    var accesses = ViewBag.Accesses as List<ITBaza.Models.AccessOperation>;
+    var phoneNumbers = ViewBag.PhoneNumbers as List<ITBaza.Models.PhoneNumberOperation>;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_ReportingSidebar" />
+        </div>
+        <div class="col-md-9">
+            <h2>Деталі працівника: @($"{Model.LastName} {Model.FirstName} {Model.MiddleName}")</h2>
+
+            <div class="alert alert-secondary">
+                <p><strong>Департамент:</strong> @Model.Vacation?.Department?.Name</p>
+                <p><strong>Відділ:</strong> @Model.Vacation?.Division?.Name</p>
+                <p><strong>Вакансія:</strong> @Model.Vacation?.Name</p>
+                <p><strong>Локація:</strong> @Model.Placement?.Country?.Name, @Model.Placement?.City, @Model.Placement?.Office</p>
+            </div>
+
+            <ul class="nav nav-tabs" id="tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#phones">Актуальні номери</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#accesses">Актуальні доступи</a>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-3">
+                <div class="tab-pane fade show active" id="phones">
+                    @if (phoneNumbers != null && phoneNumbers.Any())
+                    {
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Номер</th>
+                                    <th>Оператор</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in phoneNumbers)
+                                {
+                                    <tr>
+                                        <td>@item.PhoneNumber?.Number</td>
+                                        <td>@item.PhoneNumber?.Operator?.Name</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">Немає призначених номерів</div>
+                    }
+                </div>
+
+                <div class="tab-pane fade" id="accesses">
+                    @if (accesses != null && accesses.Any())
+                    {
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Ресурс</th>
+                                    <th>Роль</th>
+                                    <th>Логін</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in accesses)
+                                {
+                                    <tr>
+                                        <td>@item.Access?.Resource?.Name</td>
+                                        <td>@item.Access?.ResourceRole?.RoleName</td>
+                                        <td>@item.Access?.Login</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">Немає призначених доступів</div>
+                    }
+                </div>
+            </div>
+
+            <a asp-action="Index" class="btn btn-secondary mt-3">Назад</a>
+        </div>
+    </div>
+</div>
